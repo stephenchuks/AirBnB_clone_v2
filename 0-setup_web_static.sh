@@ -1,19 +1,32 @@
 #!/usr/bin/env bash
-# This script sets up web servers for deployment of web_static.
 
-
-if ! command -v nginx >/dev/null; then
-    sudo apt-get -y update
-    sudo apt-get -y install nginx
+# Install Nginx if it's not already installed
+if ! [ -x "$(command -v nginx)" ]; then
+  apt-get update
+  apt-get -y install nginx
 fi
 
-sudo mkdir -p /data/web_static/{releases,test,shared}
-sudo echo "<html><head></head><body>Holberton School</body></html>" | sudo tee /data/web_static/releases/test/index.html >/dev/null
-sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
+# Create necessary directories
+mkdir -p /data/web_static/{releases/test,shared}
 
-sudo chown -R ubuntu:ubuntu /data/
+# Create a fake HTML file
+echo "<html><head></head><body>Holberton School</body></html>" > /data/web_static/releases/test/index.html
 
-STATIC_CONFIG="location /hbnb_static {\n\talias /data/web_static/current/;\n}\n"
-sudo sed -i "s/# server_name_in_redirect off;/server_name_in_redirect off;\n\n$STATIC_CONFIG/" /etc/nginx/sites-available/default
-sudo service nginx restart
+# Create a symbolic link
+if [ -h /data/web_static/current ]; then
+  unlink /data/web_static/current
+fi
+ln -s /data/web_static/releases/test/ /data/web_static/current
+
+# Give ownership of the /data/ folder to the ubuntu user and group
+chown -R ubuntu:ubuntu /data/
+
+# Update the Nginx configuration file
+sed -i '/^\tserver_name _;/a \\n\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t}' /etc/nginx/sites-available/default
+
+# Restart Nginx
+service nginx restart
+
+exit 0
+
 
