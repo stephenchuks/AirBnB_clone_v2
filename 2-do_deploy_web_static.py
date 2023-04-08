@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-"""This python script distributes an archive to web servers,
-using the function do_deploy"""
+"""A script to distribute archives to servers"""
 from os.path import exists
 from fabric.api import run, put, env
 
@@ -8,7 +7,7 @@ env.hosts = ["35.153.78.254", "54.160.73.228"]
 
 
 def do_deploy(archive_path):
-    """Deployes the archive to the webserver"""
+    """Deploy to the webserver"""
     if not exists(archive_path):
         return False
 
