@@ -1,35 +1,20 @@
-#!/usr/bin/env python3
-"""
-Fabric script that deletes out-of-date archives
-"""
+#!/usr/bin/python3
+# This script deletes out of date archives
+from fabric.api import local
+from fabric.api import env
+from fabric.api import run
+from fabric.api import put
+from datetime import datetime
+import os.path
 
-import os
-from fabric.api import *
+env.hosts = ['35.153.78.254', '54.160.73.228']
 
-env.hosts = ['<IP web-01>', '<IP web-02>']
-env.user = 'ubuntu'
-env.key_filename = '/path/to/ssh/key'
 
-def do_clean(number=0):
+def do_clean(num=0):
+    """Delete ood archives.
     """
-    Deletes all unnecessary archives
-    """
-    number = int(number)
-    if number < 1:
-        number = 1
-
-    with cd('/data/web_static/releases'):
-        archives = sorted(run('ls -1tr').split('\n'))
-        to_delete = archives[:-number]
-        if len(to_delete) > 0:
-            run('rm -f %s' % ' '.join(to_delete))
-
-    with cd('/data/web_static/current'):
-        archives = sorted(run('ls -1tr ../releases/').split('\n'))
-        to_delete = archives[:-number]
-        if len(to_delete) > 0:
-            run('rm -f %s' % ' '.join(['../releases/' + x for x in to_delete]))
-
-if __name__ == "__main__":
-    do_clean(2)
-
+    num = int(num)
+    local("ls -d -1tr versions/* | tail -n +{} | \
+          xargs -d '\n' rm -f --".format(2 if num < 1 else num + 1))
+    run("ls -d -1tr /data/web_static/releases/* | tail -n +{} | \
+          xargs -d '\n' rm -rf --".format(2 if num < 1 else num + 1))
