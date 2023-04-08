@@ -6,7 +6,7 @@ from datetime import date
 
 
 def do_pack():
-    """ This function generates archive of the contents of AirbnB web_static project in my repo"""
+    """ This function generates archive of web_static project in my repo"""
 
     fname = strftime("%Y%m%d%H%M%S")
     try:
