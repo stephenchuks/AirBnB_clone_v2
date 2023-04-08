@@ -1,8 +1,4 @@
 #!/usr/python3
-"""
-This module contains a Fabric script that creates and distributes an
-archive to web servers.
-"""
 
 from fabric.api import env, local, put, run
 from datetime import datetime
