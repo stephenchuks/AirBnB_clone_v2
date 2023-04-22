@@ -1,2 +1,2 @@
-if ___main__==__name__:
+if ___name__==__main__:
 
